@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="result"></p>
+    <script>
+        let result = document.getElementById('result');
+        let a = Math.ceil(Math.random()*110);
+        let answer = '';
+        if ((a%2==0) && (a>=10) && (a<100)){
+            answer = "Число "+a+" є парним та двоцифровим";
+        } else{
+            answer = "Число "+a+" не є парним та двоцифровим";
+        }
+        result.innerHTML=answer;
+    </script>
+</body>
+</html>
