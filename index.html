@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    a: <input id = "inpt_a" value = "2"><br>
+    b: <input id = "inpt_b" value = "3"><br>
+    <p id="result"></p>
+    <button id="btn">Calc</button>
+    <script>
+        let inpt_a = document.getElementById("inpt_a");
+        let inpt_b = document.getElementById("inpt_b");
+        let result = document.getElementById("result");
+        let btn = document.getElementById("btn");
+
+        console.log(inpt_a);
+
+        btn.addEventListener("click",fnc_calc);
+
+        function fnc_calc(){
+            let data_a = parseInt(inpt_a.value);
+            let data_b = parseInt(inpt_b.value);
+
+            let c = data_a + data_b;
+
+            result.innerHTML="<b>"+c+"</b>";
+
+            console.log("a = "+data_a+ "   b = "+data_b+ " a+b="+c);
+        }
+
+
+    </script>
+</body>
+</html>
