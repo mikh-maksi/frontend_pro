@@ -7,7 +7,12 @@
 </head>
 <body>
     a: <input id = "inpt_a" value = "2"><br>
-
+    operator: <select name="" id="opeartor">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="*">*</option>
+        <option value="/">/</option>
+    </select><br>
     b: <input id = "inpt_b" value = "3"><br>
     <p id="result"></p>
     <button id="btn">Calc</button>
@@ -16,6 +21,7 @@
         let inpt_b = document.getElementById("inpt_b");
         let result = document.getElementById("result");
         let btn = document.getElementById("btn");
+        let sel = document.getElementById("opeartor");
 
         console.log(inpt_a);
 
@@ -24,8 +30,22 @@
         function fnc_calc(){
             let data_a = parseInt(inpt_a.value);
             let data_b = parseInt(inpt_b.value);
+            var c;
+            console.log(sel.value);
 
-            let c = data_a + data_b;
+            if (sel.value == '+'){
+                c = data_a + data_b;
+            }
+            if (sel.value == '-'){
+                c = data_a - data_b;
+            }
+            if (sel.value == '*'){
+                c = data_a * data_b;
+            }
+            if (sel.value == '/'){
+                c = data_a / data_b;
+            }
+
 
             result.innerHTML="<b>"+c+"</b>";
 
