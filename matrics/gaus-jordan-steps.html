@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Метод Гауса-Жордана</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      line-height: 1.4;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 8px 14px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    td {
+      border: 1px solid #444;
+      text-align: center;
+      padding: 8px;
+      min-width: 70px;
+    }
+
+    input {
+      width: 70px;
+      height: 40px;
+      border: none;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .step {
+      margin-top: 25px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f8f8f8;
+    }
+
+    .step-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .error {
+      color: red;
+      margin-top: 15px;
+    }
+
+    .final-title {
+      font-size: 20px;
+      margin-top: 30px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Обернена матриця методом Гауса-Жордана</h2>
+
+  <div class="controls">
+    <label>Розмір матриці:</label>
+
+    <select id="matrixSize">
+      <option value="2">2 × 2</option>
+      <option value="3" selected>3 × 3</option>
+      <option value="4">4 × 4</option>
+      <option value="5">5 × 5</option>
+    </select>
+
+    <button onclick="generateMatrix()">
+      Створити матрицю
+    </button>
+
+    <button onclick="calculateInverse()">
+      Обчислити
+    </button>
+  </div>
+
+  <div id="matrixContainer"></div>
+
+  <div class="error" id="errorBlock"></div>
+
+  <div id="stepsContainer"></div>
+
+  <div class="final-title">
+    Обернена матриця
+  </div>
+
+  <div id="inverseContainer"></div>
+
+  <script>
+
+    let size = 3;
+
+    // =========================
+    // Створення матриці
+    // =========================
+
+    function generateMatrix() {
+
+      size = Number(
+        document.getElementById("matrixSize").value
+      );
+
+      const container =
+        document.getElementById("matrixContainer");
+
+      container.innerHTML = "";
+
+      const table = document.createElement("table");
+
+      for (let i = 0; i < size; i++) {
+
+        const tr = document.createElement("tr");
+
+        for (let j = 0; j < size; j++) {
+
+          const td = document.createElement("td");
+
+          const input =
+            document.createElement("input");
+
+          input.type = "number";
+
+          input.value = (i === j) ? 1 : 0;
+
+          input.dataset.row = i;
+          input.dataset.col = j;
+
+          td.appendChild(input);
+
+          tr.appendChild(td);
+        }
+
+        table.appendChild(tr);
+      }
+
+      container.appendChild(table);
+
+      document.getElementById("stepsContainer")
+        .innerHTML = "";
+
+      document.getElementById("inverseContainer")
+        .innerHTML = "";
+
+      document.getElementById("errorBlock")
+        .textContent = "";
+    }
+
+    // =========================
+    // Отримання матриці
+    // =========================
+
+    function getMatrix() {
+
+      const matrix = [];
+
+      for (let i = 0; i < size; i++) {
+
+        const row = [];
+
+        for (let j = 0; j < size; j++) {
+
+          const input = document.querySelector(
+            `[data-row="${i}"][data-col="${j}"]`
+          );
+
+          row.push(Number(input.value));
+        }
+
+        matrix.push(row);
+      }
+
+      return matrix;
+    }
+
+    // =========================
+    // Клонування матриці
+    // =========================
+
+    function cloneMatrix(matrix) {
+      return matrix.map(row => [...row]);
+    }
+
+    // =========================
+    // Вивід матриці
+    // =========================
+
+    function renderMatrix(matrix, container) {
+
+      const table = document.createElement("table");
+
+      matrix.forEach(row => {
+
+        const tr = document.createElement("tr");
+
+        row.forEach(value => {
+
+          const td = document.createElement("td");
+
+          td.textContent =
+            Number(value.toFixed(4));
+
+          tr.appendChild(td);
+        });
+
+        table.appendChild(tr);
+      });
+
+      container.appendChild(table);
+    }
+
+    // =========================
+    // Додавання кроку
+    // =========================
+
+    function addStep(title, matrix) {
+
+      const container =
+        document.getElementById("stepsContainer");
+
+      const stepDiv =
+        document.createElement("div");
+
+      stepDiv.className = "step";
+
+      const titleDiv =
+        document.createElement("div");
+
+      titleDiv.className = "step-title";
+
+      titleDiv.textContent = title;
+
+      stepDiv.appendChild(titleDiv);
+
+      renderMatrix(matrix, stepDiv);
+
+      container.appendChild(stepDiv);
+    }
+
+    // =========================
+    // Метод Гауса-Жордана
+    // =========================
+
+    function inverseMatrix(matrix) {
+
+      const n = matrix.length;
+
+      const augmented = [];
+
+      // Створення розширеної матриці
+      for (let i = 0; i < n; i++) {
+
+        augmented[i] = [];
+
+        for (let j = 0; j < n; j++) {
+          augmented[i][j] = matrix[i][j];
+        }
+
+        for (let j = 0; j < n; j++) {
+          augmented[i][j + n] =
+            (i === j) ? 1 : 0;
+        }
+      }
+
+      addStep(
+        "Початкова розширена матриця",
+        cloneMatrix(augmented)
+      );
+
+      // Основний цикл
+      for (let i = 0; i < n; i++) {
+
+        // =====================
+        // Пошук головного елемента
+        // =====================
+
+        let maxRow = i;
+
+        for (let k = i + 1; k < n; k++) {
+
+          if (
+            Math.abs(augmented[k][i]) >
+            Math.abs(augmented[maxRow][i])
+          ) {
+            maxRow = k;
+          }
+        }
+
+        // =====================
+        // Обмін рядків
+        // =====================
+
+        if (maxRow !== i) {
+
+          [
+            augmented[i],
+            augmented[maxRow]
+          ] = [
+            augmented[maxRow],
+            augmented[i]
+          ];
+
+          addStep(
+            `Поміняли місцями рядки ${i + 1} та ${maxRow + 1}`,
+            cloneMatrix(augmented)
+          );
+        }
+
+        // =====================
+        // Перевірка
+        // =====================
+
+        if (augmented[i][i] === 0) {
+          return null;
+        }
+
+        // =====================
+        // Нормалізація рядка
+        // =====================
+
+        const pivot = augmented[i][i];
+
+        for (let j = 0; j < 2 * n; j++) {
+          augmented[i][j] /= pivot;
+        }
+
+        addStep(
+          `Поділили рядок ${i + 1} на ${pivot}`,
+          cloneMatrix(augmented)
+        );
+
+        // =====================
+        // Обнулення інших рядків
+        // =====================
+
+        for (let k = 0; k < n; k++) {
+
+          if (k !== i) {
+
+            const factor = augmented[k][i];
+
+            for (let j = 0; j < 2 * n; j++) {
+
+              augmented[k][j] -=
+                factor * augmented[i][j];
+            }
+
+            addStep(
+              `Обнулили елемент у рядку ${k + 1}, стовпці ${i + 1}`,
+              cloneMatrix(augmented)
+            );
+          }
+        }
+      }
+
+      // =====================
+      // Виділення оберненої
+      // =====================
+
+      const inverse = [];
+
+      for (let i = 0; i < n; i++) {
+
+        inverse[i] =
+          augmented[i].slice(n, 2 * n);
+      }
+
+      return inverse;
+    }
+
+    // =========================
+    // Обчислення
+    // =========================
+
+    function calculateInverse() {
+
+      document.getElementById("stepsContainer")
+        .innerHTML = "";
+
+      document.getElementById("inverseContainer")
+        .innerHTML = "";
+
+      document.getElementById("errorBlock")
+        .textContent = "";
+
+      const matrix = getMatrix();
+
+      const inverse =
+        inverseMatrix(matrix);
+
+      if (!inverse) {
+
+        document.getElementById("errorBlock")
+          .textContent =
+          "Матриця не має оберненої.";
+
+        return;
+      }
+
+      renderMatrix(
+        inverse,
+        document.getElementById(
+          "inverseContainer"
+        )
+      );
+    }
+
+    // Початкова генерація
+    generateMatrix();
+
+  </script>
+
+</body>
+</html>

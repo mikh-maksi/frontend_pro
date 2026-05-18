@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Редактор матриці</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 8px 14px;
+      cursor: pointer;
+      border: none;
+      background: #1976d2;
+      color: white;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #1259a7;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      border: 1px solid #444;
+      padding: 0;
+    }
+
+    input {
+      width: 70px;
+      height: 40px;
+      border: none;
+      text-align: center;
+      font-size: 16px;
+      outline: none;
+    }
+
+    pre {
+      margin-top: 20px;
+      background: #f3f3f3;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Редактор матриці</h2>
+
+  <div class="controls">
+    <button onclick="addRow()">+ Рядок</button>
+    <button onclick="removeRow()">- Рядок</button>
+
+    <button onclick="addColumn()">+ Стовпець</button>
+    <button onclick="removeColumn()">- Стовпець</button>
+
+    <button onclick="showJSON()">Показати JSON</button>
+  </div>
+
+  <div id="matrix-container"></div>
+
+  <pre id="json-output"></pre>
+
+  <script>
+    // Початкова матриця
+    let matrix = [
+      [0, 0],
+      [0, 0]
+    ];
+
+    const container = document.getElementById("matrix-container");
+
+    // Відображення матриці
+    function renderMatrix() {
+      container.innerHTML = "";
+
+      const table = document.createElement("table");
+
+      matrix.forEach((row, rowIndex) => {
+        const tr = document.createElement("tr");
+
+        row.forEach((cell, colIndex) => {
+          const td = document.createElement("td");
+
+          const input = document.createElement("input");
+          input.type = "number";
+          input.value = cell;
+
+          input.addEventListener("input", (e) => {
+            matrix[rowIndex][colIndex] = Number(e.target.value);
+          });
+
+          td.appendChild(input);
+          tr.appendChild(td);
+        });
+
+        table.appendChild(tr);
+      });
+
+      container.appendChild(table);
+    }
+
+    // Додати рядок
+    function addRow() {
+      const cols = matrix[0].length;
+      const newRow = Array(cols).fill(0);
+
+      matrix.push(newRow);
+
+      renderMatrix();
+    }
+
+    // Видалити рядок
+    function removeRow() {
+      if (matrix.length > 1) {
+        matrix.pop();
+        renderMatrix();
+      }
+    }
+
+    // Додати стовпець
+    function addColumn() {
+      matrix.forEach(row => {
+        row.push(0);
+      });
+
+      renderMatrix();
+    }
+
+    // Видалити стовпець
+    function removeColumn() {
+      if (matrix[0].length > 1) {
+        matrix.forEach(row => {
+          row.pop();
+        });
+
+        renderMatrix();
+      }
+    }
+
+    // Показати JSON
+    function showJSON() {
+      document.getElementById("json-output").textContent =
+        JSON.stringify(matrix, null, 2);
+    }
+
+    // Початковий рендер
+    renderMatrix();
+  </script>
+
+</body>
+</html>

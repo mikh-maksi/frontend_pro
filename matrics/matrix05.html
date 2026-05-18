@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let n = 3;
+        let m = 3;
+        let aa = []
+
+        for (let i=0;i<n;i+=1){
+             let new_aa = [];
+            for (let j=0;j<m;j+=1){
+                new_aa.push(Math.random())
+            }
+            aa.push(new_aa);
+        }
+
+        // min element+indexes
+        let sum = 0;
+        let min = 100000;
+        let i_min = -1;
+        let j_min = -1;
+
+        for (let i = 0; i < aa.length; i++) {
+        for (let j = 0; j < aa[i].length; j++) {
+            if (min>aa[i][j]){
+                min = aa[i][j];
+                i_min = i;
+                j_min = j;
+            }
+        }
+        }
+        console.log(aa);
+        console.log(min,i_min,j_min);
+    </script>
+</body>
+</html>

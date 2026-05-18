@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Система лінійних рівнянь</title>
+
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      padding: 20px;
+    }
+
+    .top-panel {
+      margin-bottom: 15px;
+    }
+
+    select,
+    button,
+    input {
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .system-container {
+      margin-top: 20px;
+    }
+
+    .equation-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    /* Фігурна дужка */
+    .equation-row:first-child::before {
+      content: "⎧";
+      position: absolute;
+      left: 0;
+      top: -5px;
+      font-size: 50px;
+    }
+
+    .equation-row:not(:first-child):not(:last-child)::before {
+      content: "⎪";
+      position: absolute;
+      left: 0;
+      top: -5px;
+      font-size: 50px;
+    }
+
+    .equation-row:last-child::before {
+      content: "⎩";
+      position: absolute;
+      left: 0;
+      top: -5px;
+      font-size: 50px;
+    }
+
+    .coef-input,
+    .result-input {
+      width: 55px;
+      height: 28px;
+      text-align: center;
+      margin: 0 5px;
+    }
+
+    .json-block {
+      margin-top: 25px;
+      background: #f3f3f3;
+      padding: 15px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      font-family: Consolas, monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-panel">
+    <label>
+      Кількість невідомих величин в системі:
+    </label>
+
+    <select id="sizeSelect">
+      <option value="2">2</option>
+      <option value="3" selected>3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+
+    <br>
+
+    <button onclick="generateSystem()">
+      Змінити розмір системи
+    </button>
+  </div>
+
+  <div>
+    Заповніть систему лінійних рівнянь:
+  </div>
+
+  <div class="system-container" id="systemContainer"></div>
+
+  <button onclick="generateJSON()">
+    Створити JSON
+  </button>
+
+  <div class="json-block" id="jsonOutput"></div>
+
+  <script>
+    let systemSize = 3;
+
+    // Генерація системи
+    function generateSystem() {
+      systemSize = Number(document.getElementById("sizeSelect").value);
+
+      const container = document.getElementById("systemContainer");
+      container.innerHTML = "";
+
+      for (let row = 0; row < systemSize; row++) {
+        const equationRow = document.createElement("div");
+        equationRow.className = "equation-row";
+
+        // Коефіцієнти
+        for (let col = 0; col < systemSize; col++) {
+          const input = document.createElement("input");
+
+          input.type = "number";
+          input.value = "0";
+          input.className = "coef-input";
+
+          input.dataset.row = row;
+          input.dataset.col = col;
+
+          equationRow.appendChild(input);
+
+          const variableText = document.createElement("span");
+          variableText.innerHTML = `
+            x<sub>${col + 1}</sub>
+            ${col < systemSize - 1 ? "+" : "="}
+          `;
+
+          equationRow.appendChild(variableText);
+        }
+
+        // Права частина
+        const resultInput = document.createElement("input");
+
+        resultInput.type = "number";
+        resultInput.value = "0";
+        resultInput.className = "result-input";
+
+        resultInput.dataset.result = row;
+
+        equationRow.appendChild(resultInput);
+
+        container.appendChild(equationRow);
+      }
+    }
+
+    // Генерація JSON
+    function generateJSON() {
+      const matrix = [];
+      const vector = [];
+
+      // Матриця
+      for (let row = 0; row < systemSize; row++) {
+        const matrixRow = [];
+
+        for (let col = 0; col < systemSize; col++) {
+          const input = document.querySelector(
+            `[data-row="${row}"][data-col="${col}"]`
+          );
+
+          matrixRow.push(Number(input.value));
+        }
+
+        matrix.push(matrixRow);
+
+        // Вектор
+        const resultInput = document.querySelector(
+          `[data-result="${row}"]`
+        );
+
+        vector.push(Number(resultInput.value));
+      }
+
+      // JSON результат
+      const result = {
+        matrix: matrix,
+        vector: vector
+      };
+
+      document.getElementById("jsonOutput").textContent =
+        JSON.stringify(result, null, 2);
+    }
+
+    // Початкове створення
+    generateSystem();
+  </script>
+
+</body>
+</html>
