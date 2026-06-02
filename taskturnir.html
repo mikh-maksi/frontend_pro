@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      td {
+        border: 1px solid black;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      img {
+        width: 50px;
+        height: auto;
+      }
+      .container {
+        display: flex;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="matrix-container"></div>
+
+      <div id="results"></div>
+    </div>
+
+    <p id="save"></p>
+  </body>
+  <script>
+    let aa = [];
+    let pus = [];
+    let names = [
+      { name: "Barsylona", skill: 10, src: "img/FC_Barcelona.svg.png" },
+      { name: "Real Madrid", skill: 9, src: "img/images.png" },
+      {
+        name: "Atletico Madrid",
+        skill: 8,
+        src: "img/Atlético_Madrid_logo.png",
+      },
+      { name: "Реал Бетіс", skill: 2, src: "img/Real_betis_logo.svg.png" },
+      { name: "Сельта", skill: 5, src: "img/Celta_Vigo.svg.png" },
+    ];
+    for (let i = 0; i <= 4; i++) {
+      let bb = [];
+      let cc = [];
+      for (let j = 0; j <= 4; j++) {
+        let a = "-";
+        let b = "-";
+        if (i !== j) {
+          a = randomSkills(names[i].skill, names[j].skill);
+          b = score(a);
+        }
+
+        bb.push(a);
+        cc.push(b);
+      }
+      aa.push(bb);
+      pus.push(cc);
+    }
+
+    let p = document.getElementById("results");
+    result = sum(aa);
+    let obj = [];
+    for (let i = 0; i < result.length; i++) {
+      obj.push({
+        name: names[i].name,
+        points: result[i],
+      });
+    }
+
+    let div = document.getElementById("matrix-container");
+    let table = document.createElement("table");
+    let tr = document.createElement("tr");
+    let td = document.createElement("td");
+    tr.appendChild(td);
+    for (let j = 0; j <= 4; j++) {
+      let td = document.createElement("td");
+
+      td.innerHTML = `<img src = ` + names[j].src + `>`;
+      tr.appendChild(td);
+    }
+    let td3 = document.createElement("td");
+    td3.textContent = "results";
+    tr.appendChild(td3);
+
+    table.appendChild(tr);
+    for (let i = 0; i <= 4; i++) {
+      let tr = document.createElement("tr");
+      let td1 = document.createElement("td");
+      td1.innerHTML = `<img src = ` + names[i].src + `>`;
+      tr.appendChild(td1);
+      for (let j = 0; j <= 4; j++) {
+        let td = document.createElement("td");
+        td.textContent = pus[i][j];
+        tr.appendChild(td);
+      }
+      let td2 = document.createElement("td");
+      td2.textContent = obj[i].points;
+      tr.appendChild(td2);
+      table.appendChild(tr);
+    }
+    div.appendChild(table);
+
+    result = sort(aa, obj);
+
+    results(names, aa, result, p);
+    save(names, aa);
+
+    function sum(aa) {
+      let sum = [0, 0, 0, 0, 0];
+      for (let i = 0; i <= 4; i++) {
+        for (let j = 0; j <= 4; j++) {
+          if (aa[i][j] === 0) {
+            sum[i] += 1;
+            sum[j] += 1;
+          }
+          if (aa[i][j] === -1) {
+            sum[j] += 3;
+          }
+          if (aa[i][j] === 1) {
+            sum[i] += 3;
+          }
+        }
+      }
+      return sum;
+    }
+    function randomSkills(f, s) {
+      let c = Math.min(f / s, s / f);
+
+      let ser = ((f + s) * c) / 2;
+
+      let vyd = 1 / (f + s + ser);
+
+      let wf = vyd * f;
+      let ff = vyd * ser;
+      let ws = vyd * s;
+
+      return chooseRandom(wf, ff, ws);
+    }
+    function chooseRandom(wf, ff, ws) {
+      let a = Math.random();
+      if (a <= wf) {
+        return 1;
+      } else if (a <= wf + ff) {
+        return 0;
+      }
+      return -1;
+    }
+    function sort(aa, result) {
+      let sortres = result;
+      for (let j = 0; j < sortres.length; j++) {
+        let min = -1;
+        let i_min = 0;
+        for (let i = j; i < sortres.length; i++) {
+          if (min < sortres[i].points) {
+            i_min = i;
+            min = sortres[i].points;
+          }
+        }
+        let k = sortres[j].points;
+        sortres[j].points = min;
+        sortres[i_min].points = k;
+
+        k = sortres[j].name;
+        sortres[j].name = sortres[i_min].name;
+        sortres[i_min].name = k;
+      }
+      return sortres;
+    }
+    function score(res) {
+      if (res === 1) {
+        return "1:0";
+      } else if (res === 0) {
+        return "1:1";
+      } else {
+        return "0:1";
+      }
+    }
+    function results(names, aa, result, p) {
+      let div = document.getElementById("results");
+      let table = document.createElement("table");
+      for (let i = 0; i < result.length; i++) {
+        let l = 0;
+        for (let j = 0; j < names.length; j++) {
+          if (names[j].name === result[i].name) {
+            l = j;
+            break;
+          }
+        }
+        let td1 = document.createElement("td"); // logo
+        let td2 = document.createElement("td"); // name
+        let td3 = document.createElement("td"); // skill
+        let td4 = document.createElement("td"); // points
+        let tr = document.createElement("tr");
+
+        td1.innerHTML = "<img src = " + names[l].src + ">";
+        td2.textContent = names[l].name;
+        td3.textContent = names[l].skill;
+        td4.textContent = result[i].points;
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td4);
+        table.appendChild(tr);
+      }
+      div.appendChild(table);
+    }
+    function save(names, aa) {
+      let s = {
+        teams: names,
+        result: aa,
+      };
+      const js = JSON.stringify(s);
+
+      document.getElementById("save").innerHTML = js;
+    }
+  </script>
+</html>

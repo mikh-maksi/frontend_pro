@@ -27,7 +27,9 @@
     function renderMatrix(matrix, containerId = "matrix-container") {
       const container = document.getElementById(containerId);
       container.innerHTML = "";
+
       const table = document.createElement("table");
+      
       for (let i = 0; i < matrix.length; i++) {
         const tr = document.createElement("tr");
         for (let j = 0; j < matrix[i].length; j++) {

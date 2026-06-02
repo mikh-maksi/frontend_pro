@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <textarea name="text" id="text"></textarea>
+    <button id="load">Завантажити код</button>
+  </body>
+  <script>
+    let text = document.getElementById("text");
+    let btn = document.getElementById("load");
+    btn.addEventListener("click", load);
+    function load() {
+      const a = JSON.parse(text.value);
+      console.log(a);
+    }
+  </script>
+</html>
